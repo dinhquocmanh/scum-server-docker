@@ -39,7 +39,8 @@ as_server_user() {
 
 apply_scum_settings() {
   local settings='/data/server/SCUM/Saved/Config/WindowsServer/ServerSettings.ini'
-  [[ -f "$settings" ]] || return 0
+  mkdir -p "$(dirname "$settings")"
+  [[ -f "$settings" ]] || printf '[General]\n' > "$settings"
   SERVER_NAME="${SERVER_NAME:-SCUM Docker Server}" \
   SERVER_DESCRIPTION="${SERVER_DESCRIPTION:-}" \
   SERVER_PASSWORD="${SERVER_PASSWORD:-}" \
