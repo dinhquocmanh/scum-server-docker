@@ -44,6 +44,9 @@ apply_scum_settings() {
   SERVER_DESCRIPTION="${SERVER_DESCRIPTION:-}" \
   SERVER_PASSWORD="${SERVER_PASSWORD:-}" \
   SERVER_PLAYSTYLE="${SERVER_PLAYSTYLE:-PVP}" \
+  RCON_ENABLED="${RCON_ENABLED:-1}" \
+  RCON_PORT="${RCON_PORT:-$GAME_PORT}" \
+  RCON_PASSWORD="${RCON_PASSWORD:-}" \
   python3 - "$settings" <<'PY'
 import os
 import sys
@@ -55,6 +58,9 @@ values = {
     'scum.ServerDescription': os.environ['SERVER_DESCRIPTION'],
     'scum.ServerPassword': os.environ['SERVER_PASSWORD'],
     'scum.ServerPlaystyle': os.environ['SERVER_PLAYSTYLE'],
+    'RCONEnabled': os.environ['RCON_ENABLED'],
+    'RCONPort': os.environ['RCON_PORT'],
+    'RCONPassword': os.environ['RCON_PASSWORD'],
 }
 lines = path.read_text(encoding='utf-8', errors='surrogateescape').splitlines(keepends=True)
 section = None
