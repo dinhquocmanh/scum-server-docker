@@ -1,0 +1,35 @@
+services:
+  scum-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/scum-server:latest
+    container_name: scum-server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      UPDATE_ON_START: ${UPDATE_ON_START:-true}
+      VALIDATE_ON_UPDATE: ${VALIDATE_ON_UPDATE:-false}
+      SERVER_NAME: ${SERVER_NAME:-SCUM Docker Server}
+      SERVER_DESCRIPTION: ${SERVER_DESCRIPTION:-Managed with Docker Compose}
+      SERVER_PASSWORD: ${SERVER_PASSWORD:-}
+      MAX_PLAYERS: ${MAX_PLAYERS:-32}
+      SERVER_PLAYSTYLE: ${SERVER_PLAYSTYLE:-PVP}
+      GAME_PORT: ${GAME_PORT:-7777}
+      QUERY_PORT: ${QUERY_PORT:-27015}
+      MULTIHOME_IP: ${MULTIHOME_IP:-}
+      ADDITIONAL_FLAGS: ${ADDITIONAL_FLAGS:--nobattleye}
+      DEPOT_MAX_DOWNLOADS: ${DEPOT_MAX_DOWNLOADS:-8}
+      LOG_WEBHOOK_URL: ${LOG_WEBHOOK_URL:-}
+    # SCUM needs its game process to bind the public MULTIHOME_IP. Host network
+    # avoids Docker bridge/NAT breaking that bind and exposes GAME_PORT..+2 and
+    # QUERY_PORT directly on the VPS.
+    network_mode: host
+    volumes:
+      - ./data:/data
+    user: "0:0"
+    stop_grace_period: 90s
