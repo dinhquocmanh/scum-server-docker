@@ -8,10 +8,12 @@ GAME_PORT="${GAME_PORT:-7777}"
 QUERY_PORT="${QUERY_PORT:-27015}"
 MULTIHOME_IP="${MULTIHOME_IP:-}"
 MAX_PLAYERS="${MAX_PLAYERS:-32}"
+RCON_PORT="${RCON_PORT:-$((GAME_PORT + 2))}"
 ADDITIONAL_FLAGS="${ADDITIONAL_FLAGS:--nobattleye}"
 
 require_uint GAME_PORT "$GAME_PORT"
 require_uint QUERY_PORT "$QUERY_PORT"
+require_uint RCON_PORT "$RCON_PORT"
 [[ "$MAX_PLAYERS" =~ ^[1-9][0-9]*$ ]] || { error "MAX_PLAYERS must be a positive integer"; exit 64; }
 if [[ -n "$MULTIHOME_IP" ]]; then
   [[ "$MULTIHOME_IP" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || { error "MULTIHOME_IP must be an IPv4 address; got '$MULTIHOME_IP'"; exit 64; }
@@ -25,7 +27,7 @@ if [[ -n "$MULTIHOME_IP" ]]; then
 fi
 
 cd /data/server
-info "Launching SCUM: game UDP ${GAME_PORT}-$((GAME_PORT + 2)), query UDP ${QUERY_PORT}, max players ${MAX_PLAYERS}"
+info "Launching SCUM: game UDP ${GAME_PORT}-$((GAME_PORT + 2)), query UDP ${QUERY_PORT}, RCON TCP ${RCON_PORT}, max players ${MAX_PLAYERS}"
 
 shutdown() {
   warn "Shutdown received; forwarding SIGINT to SCUM"

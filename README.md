@@ -43,18 +43,21 @@ data/
 
 The entrypoint makes this directory owned by the configured `PUID:PGID` (default `1000:1000`, the host `ubuntu` account), then launches Wine as that unprivileged user.
 
-## Ports
+## Ports and network mode
 
-Defaults are exposed by Compose as UDP:
+This Compose stack defaults to `NETWORK_MODE=host`: SCUM binds the public address in `MULTIHOME_IP` directly. Therefore Docker `ports:` mappings are deliberately absent; the port declaration is explicit in `.env`:
 
-| Purpose | Port |
-|---|---:|
-| Game | 7777 |
-| Raw game socket | 7778 |
-| Game/Steam connection | 7779 |
-| Explicit query | 27015 |
+```dotenv
+NETWORK_MODE=host
+MULTIHOME_IP=PUBLIC_VPS_IP
+GAME_PORT=7777
+GAME_PORT_PLUS_1=7778
+GAME_PORT_PLUS_2=7779
+QUERY_PORT=27015
+RCON_PORT=7779
+```
 
-Open/forward all four UDP ports. `GAME_PORT_PLUS_1` and `GAME_PORT_PLUS_2` in `.env` must always equal `GAME_PORT+1` and `GAME_PORT+2`. Avoid the Steam-reserved query range `27020-27050`.
+Open/forward UDP `GAME_PORT`, `GAME_PORT_PLUS_1`, `GAME_PORT_PLUS_2`, and `QUERY_PORT`. Open TCP `RCON_PORT` only if you have a compatible RCON listener configured. Ensure the `+1`/`+2` values track `GAME_PORT`; avoid the Steam-reserved query range `27020-27050`.
 
 For UFW:
 
