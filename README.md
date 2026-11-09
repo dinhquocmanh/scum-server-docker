@@ -62,13 +62,10 @@ The resolved Compose mappings are:
 
 ```text
 82.25.36.32:7777:7777/udp
-82.25.36.32:7777:7777/tcp
 82.25.36.32:7778:7778/udp
-82.25.36.32:7778:7778/tcp
 82.25.36.32:7779:7779/udp
-82.25.36.32:7779:7779/tcp
 82.25.36.32:27015:27015/udp
-82.25.36.32:27015:27015/tcp
+82.25.36.32:7779:7779/tcp
 ```
 
 Open/forward UDP `GAME_PORT`, `GAME_PORT_PLUS_1`, `GAME_PORT_PLUS_2`, and `QUERY_PORT`. Open TCP `RCON_PORT` only if you have a compatible RCON listener configured. Ensure the `+1`/`+2` values track `GAME_PORT`; avoid the Steam-reserved query range `27020-27050`.

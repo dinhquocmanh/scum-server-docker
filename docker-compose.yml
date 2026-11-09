@@ -29,17 +29,14 @@ services:
       ADDITIONAL_FLAGS: ${ADDITIONAL_FLAGS:--nobattleye}
       DEPOT_MAX_DOWNLOADS: ${DEPOT_MAX_DOWNLOADS:-8}
       LOG_WEBHOOK_URL: ${LOG_WEBHOOK_URL:-}
-    # Explicit host-IP mappings: BIND_IP is the VPS game IP, not the Docker
-    # network address. Expose both protocols to match real-world SCUM hosting.
+    # Explicit host-IP mappings. BIND_IP is the VPS game address, not Docker's
+    # bridge address. SCUM needs UDP game/+1/+2/query; RCON is TCP only.
     ports:
       - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT:-7777}:${GAME_PORT:-7777}/udp"
-      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT:-7777}:${GAME_PORT:-7777}/tcp"
       - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_1:-7778}:${GAME_PORT_PLUS_1:-7778}/udp"
-      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_1:-7778}:${GAME_PORT_PLUS_1:-7778}/tcp"
       - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_2:-7779}:${GAME_PORT_PLUS_2:-7779}/udp"
-      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_2:-7779}:${GAME_PORT_PLUS_2:-7779}/tcp"
       - "${BIND_IP:?Set BIND_IP in .env}:${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/udp"
-      - "${BIND_IP:?Set BIND_IP in .env}:${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/tcp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${RCON_PORT:-7779}:${RCON_PORT:-7779}/tcp"
     volumes:
       - ./data:/data
     user: "0:0"
