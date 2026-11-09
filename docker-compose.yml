@@ -21,6 +21,7 @@ services:
       SERVER_PLAYSTYLE: ${SERVER_PLAYSTYLE:-PVP}
       GAME_PORT: ${GAME_PORT:-7777}
       QUERY_PORT: ${QUERY_PORT:-27015}
+      # Leave empty under bridge networking unless a valid container-side IP is known.
       MULTIHOME_IP: ${MULTIHOME_IP:-}
       RCON_ENABLED: ${RCON_ENABLED:-1}
       RCON_PORT: ${RCON_PORT:-$GAME_PORT_PLUS_2}
@@ -28,11 +29,25 @@ services:
       ADDITIONAL_FLAGS: ${ADDITIONAL_FLAGS:--nobattleye}
       DEPOT_MAX_DOWNLOADS: ${DEPOT_MAX_DOWNLOADS:-8}
       LOG_WEBHOOK_URL: ${LOG_WEBHOOK_URL:-}
-    # SCUM needs its game process to bind the public MULTIHOME_IP. Host network
-    # avoids Docker bridge/NAT breaking that bind. The actual port declarations
-    # live in .env (GAME_PORT, GAME_PORT_PLUS_1, GAME_PORT_PLUS_2, QUERY_PORT).
-    network_mode: ${NETWORK_MODE:-host}
+    # Explicit host-IP mappings: BIND_IP is the VPS game IP, not the Docker
+    # network address. Expose both protocols to match real-world SCUM hosting.
+    ports:
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT:-7777}:${GAME_PORT:-7777}/udp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT:-7777}:${GAME_PORT:-7777}/tcp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_1:-7778}:${GAME_PORT_PLUS_1:-7778}/udp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_1:-7778}:${GAME_PORT_PLUS_1:-7778}/tcp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_2:-7779}:${GAME_PORT_PLUS_2:-7779}/udp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${GAME_PORT_PLUS_2:-7779}:${GAME_PORT_PLUS_2:-7779}/tcp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/udp"
+      - "${BIND_IP:?Set BIND_IP in .env}:${QUERY_PORT:-27015}:${QUERY_PORT:-27015}/tcp"
     volumes:
       - ./data:/data
     user: "0:0"
     stop_grace_period: 90s
+    networks:
+      - scum_network
+
+networks:
+  scum_network:
+    name: ${COMPOSE_PROJECT_NAME:-scum}_network
+    driver: bridge

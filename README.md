@@ -43,18 +43,32 @@ data/
 
 The entrypoint makes this directory owned by the configured `PUID:PGID` (default `1000:1000`, the host `ubuntu` account), then launches Wine as that unprivileged user.
 
-## Ports and network mode
+## Ports and Docker bridge network
 
-This Compose stack defaults to `NETWORK_MODE=host`: SCUM binds the public address in `MULTIHOME_IP` directly. Therefore Docker `ports:` mappings are deliberately absent; the port declaration is explicit in `.env`:
+The service runs in a dedicated Docker bridge network, `scum_network`. Set `BIND_IP` to the VPS game address so Compose explicitly publishes the same style of mappings used by ordinary game-server containers:
 
 ```dotenv
-NETWORK_MODE=host
-MULTIHOME_IP=PUBLIC_VPS_IP
+BIND_IP=82.25.36.32
+# Empty under bridge networking; Docker does the host-IP forwarding.
+MULTIHOME_IP=
 GAME_PORT=7777
 GAME_PORT_PLUS_1=7778
 GAME_PORT_PLUS_2=7779
 QUERY_PORT=27015
 RCON_PORT=7779
+```
+
+The resolved Compose mappings are:
+
+```text
+82.25.36.32:7777:7777/udp
+82.25.36.32:7777:7777/tcp
+82.25.36.32:7778:7778/udp
+82.25.36.32:7778:7778/tcp
+82.25.36.32:7779:7779/udp
+82.25.36.32:7779:7779/tcp
+82.25.36.32:27015:27015/udp
+82.25.36.32:27015:27015/tcp
 ```
 
 Open/forward UDP `GAME_PORT`, `GAME_PORT_PLUS_1`, `GAME_PORT_PLUS_2`, and `QUERY_PORT`. Open TCP `RCON_PORT` only if you have a compatible RCON listener configured. Ensure the `+1`/`+2` values track `GAME_PORT`; avoid the Steam-reserved query range `27020-27050`.
